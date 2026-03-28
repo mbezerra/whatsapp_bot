@@ -3,45 +3,39 @@ Script para execução do processo de ingestão e vetorização da documentaçã
 """
 import os
 from dotenv import load_dotenv
-from src.ingestion.scraper import PHPScraper
+from src.ingestion.scraper import PHPLocalExtractor
 from src.ingestion.vector_store import VectorStoreManager
 
 load_dotenv()
 
 def main():
     """
-    Função principal que coordena o processo de scraping e vetorização.
+    Função principal que coordena o processo de ingestão local e vetorização.
     """
-    base_url = os.getenv("PHP_MANUAL_URL")
+    local_file = os.getenv("PHP_MANUAL_LOCAL_PATH")
     persist_db = os.getenv("CHROMA_DB_PATH")
 
-    print(f"Iniciando ingestão da documentação: {base_url}")
-    scraper = PHPScraper(base_url)
+    print(f"Iniciando ingestão da documentação local: {local_file}")
+
+    if not os.path.exists(local_file):
+        print(f"Erro: Arquivo local não encontrado em {local_file}")
+        return
+
+    extractor = PHPLocalExtractor(local_file)
     vector_manager = VectorStoreManager(persist_db)
 
-    # 1. Obter links principais
-    print("Extraindo links...")
-    links = scraper.get_links()
-    # Para teste/demo, vamos limitar a 10 links
-    links_to_process = links[:10]
-    print(f"Total de links encontrados: {len(links)}.")
-    print(f"Processando os primeiros {len(links_to_process)}.")
+    # 1. Extrair conteúdo do arquivo consolidado
+    print("Extraindo conteúdo do arquivo .html.gz...")
+    raw_contents = extractor.get_content()
 
-    # 2. Extrair conteúdo
-    raw_contents = []
-    for link in links_to_process:
-        print(f"Lendo: {link}")
-        content = scraper.get_content(link)
-        if content:
-            raw_contents.append(content)
-
-    # 3. Adicionar ao banco vetorial
+    # 2. Adicionar ao banco vetorial
     if raw_contents:
-        print(f"Vetorizando {len(raw_contents)} documentos...")
+        print(f"Vetorizando documento consolidado ({len(raw_contents[0]['text'])} caracteres)...")
+        # O VectorStoreManager fará o split automático em chunks
         vector_manager.add_content(raw_contents)
-        print("Ingestão concluída com sucesso!")
+        print("Ingestão local concluída com sucesso!")
     else:
-        print("Nenhum conteúdo extraído.")
+        print("Nenhum conteúdo extraído do arquivo local.")
 
 if __name__ == "__main__":
     main()

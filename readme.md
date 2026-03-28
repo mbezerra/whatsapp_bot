@@ -35,15 +35,15 @@ pip install -r requirements.txt
 ```
 
 ### 3. Variáveis de Ambiente
-Crie um arquivo `.env` na raiz do projeto:
+Crie um arquivo `.env` na raiz do projeto (veja `.env.sample` para referência):
 ```env
 GROQ_API_KEY=sua_chave_aqui
 CHROMA_DB_PATH=./data/chroma_db
-PHP_MANUAL_URL=https://www.php.net/manual/pt_BR/index.php
+PHP_MANUAL_LOCAL_PATH=./php_doc/php_manual_pt_BR.html.gz
 ```
 
 ### 4. Ingestão da Base de Conhecimento
-Execute o script para popular o banco vetorial com a documentação oficial:
+Execute o script para popular o banco vetorial a partir do arquivo local consolidado:
 ```bash
 export PYTHONPATH=$PYTHONPATH:$(pwd)
 python src/ingestion/run_ingestion.py
