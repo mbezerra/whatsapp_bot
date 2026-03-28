@@ -1,4 +1,4 @@
-"""Module for managing vector stores using OpenAI embeddings and Chroma vector database.
+"""Module for managing vector stores using HuggingFace embeddings and Chroma vector database.
 
 This module provides a VectorStoreManager class that simplifies the process of
 creating, updating, and querying vector stores. It handles document chunking,
@@ -6,7 +6,7 @@ embedding generation, and persistence using Chroma as the vector database backen
 
 Key features:
 - Automatic text splitting and chunking with configurable parameters
-- Integration with OpenAI embeddings for semantic representation
+- Integration with HuggingFace embeddings for semantic representation
 - Persistent storage of vector embeddings
 - Simple interface for adding content and creating retrievers
 
@@ -16,7 +16,7 @@ Example usage:
     retriever = manager.get_retriever()
 """
 
-from typing import List, Dict
+from typing import List, Dict, Optional
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -41,6 +41,18 @@ class VectorStoreManager:
             chunk_size=1000,
             chunk_overlap=100
         )
+        self._vector_db: Optional[Chroma] = None
+
+    def _get_vector_db(self) -> Chroma:
+        """
+        Retorna a instância do ChromaDB, inicializando-a apenas se necessário.
+        """
+        if self._vector_db is None:
+            self._vector_db = Chroma(
+                persist_directory=self.persist_directory,
+                embedding_function=self.embeddings
+            )
+        return self._vector_db
 
     def add_content(self, raw_contents: List[Dict[str, str]]):
         """
@@ -56,18 +68,15 @@ class VectorStoreManager:
 
         split_docs = self.text_splitter.split_documents(documents)
 
-        vector_db = Chroma.from_documents(
+        self._vector_db = Chroma.from_documents(
             documents=split_docs,
             embedding=self.embeddings,
             persist_directory=self.persist_directory
         )
-        return vector_db
+        return self._vector_db
 
     def get_retriever(self):
         """
         Retorna um retriever para busca semântica no banco vetorial.
         """
-        return Chroma(
-            persist_directory=self.persist_directory,
-            embedding_function=self.embeddings
-        ).as_retriever()
+        return self._get_vector_db().as_retriever()

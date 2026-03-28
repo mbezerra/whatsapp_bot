@@ -2,18 +2,22 @@
 Script para execução do processo de ingestão e vetorização da documentação PHP.
 """
 import os
-from dotenv import load_dotenv
+from src.config import Config
 from src.ingestion.scraper import PHPLocalExtractor
 from src.ingestion.vector_store import VectorStoreManager
-
-load_dotenv()
 
 def main():
     """
     Função principal que coordena o processo de ingestão local e vetorização.
     """
-    local_file = os.getenv("PHP_MANUAL_LOCAL_PATH")
-    persist_db = os.getenv("CHROMA_DB_PATH")
+    try:
+        Config.validate()
+    except ValueError as e:
+        print(f"Erro de configuração: {e}")
+        return
+
+    local_file = Config.PHP_MANUAL_LOCAL_PATH
+    persist_db = Config.CHROMA_DB_PATH
 
     print(f"Iniciando ingestão da documentação local: {local_file}")
 

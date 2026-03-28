@@ -40,6 +40,8 @@ Crie um arquivo `.env` na raiz do projeto (veja `.env.sample` para referência):
 GROQ_API_KEY=sua_chave_aqui
 CHROMA_DB_PATH=./data/chroma_db
 PHP_MANUAL_LOCAL_PATH=./php_doc/php_manual_pt_BR.html.gz
+TWILIO_AUTH_TOKEN=seu_auth_token_aqui
+FLASK_DEBUG=True
 ```
 
 ### 4. Ingestão da Base de Conhecimento
@@ -70,8 +72,9 @@ pytest tests/
 ```
 
 ## 🧪 Estratégia de Qualidade
-- **Testes Unitários:** Validam a lógica isolada de scraping, processamento de texto e armazenamento.
+- **Testes Unitários:** Validam a lógica isolada de extração local, processamento de texto e armazenamento.
 - **Testes de Fluxo:** Simulam o ciclo de vida completo de uma mensagem, desde a chegada no Webhook até a geração da resposta TwiML.
+- **Validação de Webhook:** O sistema inclui validação de assinatura do Twilio para garantir que as mensagens venham de fontes confiáveis.
 - **Gestão de Sessão:** O sistema identifica o usuário via `From` do WhatsApp e mantém o contexto da conversa utilizando SQLite.
 
 ## 📝 Notas de Implementação

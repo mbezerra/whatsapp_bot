@@ -4,15 +4,17 @@ Módulo para gerenciamento do histórico de conversas em um banco de dados SQLit
 import sqlite3
 import os
 
+from src.config import Config
+
 class ChatHistoryDB:
     """
     Gerenciador de persistência do histórico de conversas utilizando SQLite.
     """
-    def __init__(self, db_path: str = "data/chat_history.db"):
+    def __init__(self, db_path: str = None):
         """
         Inicializa o gerenciador de banco de dados.
         """
-        self.db_path = db_path
+        self.db_path = db_path or Config.DATABASE_PATH
         self._init_db()
 
     def _init_db(self):
@@ -20,7 +22,7 @@ class ChatHistoryDB:
         Cria a estrutura de pastas e a tabela de mensagens se não existirem.
         """
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, timeout=10) as conn:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS messages (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,7 +37,7 @@ class ChatHistoryDB:
         """
         Adiciona uma nova mensagem ao histórico de uma sessão.
         """
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, timeout=10) as conn:
             conn.execute(
                 "INSERT INTO messages (session_id, role, content) VALUES (?, ?, ?)",
                 (session_id, role, content)
@@ -45,7 +47,7 @@ class ChatHistoryDB:
         """
         Recupera as últimas mensagens de uma sessão, ordenadas cronologicamente.
         """
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, timeout=10) as conn:
             query = """
                 SELECT role, content FROM messages
                 WHERE session_id = ?

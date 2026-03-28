@@ -1,24 +1,19 @@
 """
-Testes unitários para o módulo PHPScraper.
+Testes unitários para o módulo PHPLocalExtractor.
 """
-from unittest.mock import patch
+import gzip
+from unittest.mock import patch, mock_open
 
-def test_get_links_empty_on_error(php_scraper):
+def test_get_content_returns_list(php_scraper):
     """
-    Valida que o scraper retorna uma lista vazia em caso de erro HTTP.
+    Valida que o extrator lê corretamente o arquivo .gz e retorna uma lista.
     """
-    with patch('requests.get') as mock_get:
-        mock_get.return_value.status_code = 404
-        php_scraper.base_url = "https://example.com"
-        assert php_scraper.get_links() == []
-
-def test_get_content_returns_dict(php_scraper):
-    """
-    Valida que o scraper extrai corretamente o conteúdo de uma página.
-    """
-    with patch('requests.get') as mock_get:
-        mock_get.return_value.status_code = 200
-        mock_get.return_value.text = "<html><div id='layout-content'>Conteúdo PHP</div></html>"
-        content = php_scraper.get_content("https://example.com/page.php")
-        assert content['text'] == "Conteúdo PHP"
-        assert "url" in content
+    html_content = "<html><title>PHP Manual</title><body><div id='layout-content'>Conteúdo PHP</div></body></html>"
+    
+    with patch('gzip.open', mock_open(read_data=html_content.encode('utf-8'))):
+        content = php_scraper.get_content()
+        assert isinstance(content, list)
+        assert len(content) == 1
+        assert content[0]['text'] == "Conteúdo PHP"
+        assert "url" in content[0]
+        assert content[0]['title'] == "PHP Manual"
