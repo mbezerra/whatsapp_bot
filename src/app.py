@@ -90,6 +90,16 @@ def webhook():
         if not incoming_msg:
             return str(resp)
 
+        # Prevenção básica de abuso: limite de caracteres para evitar prompts gigantes
+        if len(incoming_msg) > 1000:
+            logger.warning("Mensagem ignorada: muito longa (%s caracteres)", len(incoming_msg))
+            msg = resp.message()
+            msg.body(
+                "Sua mensagem é muito longa. "
+                "Por favor, tente ser mais conciso (máximo 1000 caracteres)."
+            )
+            return str(resp)
+
         # Processa via IA usando o número do remetente como ID de sessão
         response_text = rag_service.get_response(sender_number, incoming_msg)
 
