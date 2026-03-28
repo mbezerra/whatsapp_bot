@@ -68,6 +68,30 @@ curl -X POST http://localhost:5001/webhook \
      -d "From=whatsapp:+5511999999999"
 ```
 
+### 📱 Testando com WhatsApp Real (Twilio Sandbox)
+Para testar o bot com um dispositivo real, siga estes passos:
+
+1. **Exponha seu servidor local:**
+   O Twilio precisa de uma URL HTTPS pública. Use o **ngrok** para criar um túnel:
+   ```bash
+   # Instale o ngrok (se não tiver): pip install pyngrok ou baixe em ngrok.com
+   ngrok http 5001
+   ```
+   Copie a URL gerada (ex: `https://abcd-123.ngrok-free.app`).
+
+2. **Configure o Sandbox da Twilio:**
+   - Acesse o [Console Twilio](https://console.twilio.com/) > Messaging > Try it out > Send a WhatsApp message.
+   - Siga as instruções para ativar o Sandbox no seu celular (enviando a mensagem `join <palavra-chave>`).
+   - Na aba **Sandbox Settings**, cole sua URL do ngrok no campo "When a message comes in":
+     `https://abcd-123.ngrok-free.app/webhook`
+   - Salve as configurações.
+
+3. **Validação de Segurança:**
+   Certifique-se de que o `TWILIO_AUTH_TOKEN` no seu `.env` é o mesmo do seu Dashboard Twilio para que a validação de assinatura funcione.
+
+4. **Interaja:**
+   Envie mensagens para o número do Sandbox no seu WhatsApp e receba as respostas da documentação PHP!
+
 ### Executar Suíte de Testes
 ```bash
 pytest tests/
