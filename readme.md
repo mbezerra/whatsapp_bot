@@ -6,18 +6,20 @@ Assistente inteligente para WhatsApp especializado na documentação oficial do 
 
 O projeto utiliza uma stack moderna focada em performance e eficiência de custos:
 
-- **LLM:** Groq (Llama 3.1 8B) para geração de respostas ultra-rápidas.
+- **LLM:** Groq (Llama 3.3 70B) para geração de respostas de alta fidelidade e aderência a instruções.
 - **Embeddings:** HuggingFace (`all-MiniLM-L6-v2`) processados localmente (CPU/GPU).
 - **Vector Store:** ChromaDB para armazenamento e busca semântica de alta performance.
 - **Backend:** Flask (Python 3.12+) atuando como Webhook para integração.
 - **Persistência:** SQLite para gestão de histórico de conversas e memória de sessão.
+- **Configuração:** Módulo centralizado com validação rigorosa de variáveis de ambiente.
+- **Segurança:** Validação de assinatura Twilio para proteção do Webhook.
 - **Integração WhatsApp:** Twilio Messaging API.
 
 ## 📁 Estrutura do Projeto
 
-- `src/ingestion/`: Módulos de extração ([scraper.py](file:///home/mbezerra/Works/whatsapp_bot/src/ingestion/scraper.py)) e vetorização ([vector_store.py](file:///home/mbezerra/Works/whatsapp_bot/src/ingestion/vector_store.py)).
-- `src/ai/`: Orquestração do pipeline RAG ([rag_service.py](file:///home/mbezerra/Works/whatsapp_bot/src/ai/rag_service.py)).
-- `src/models/`: Camada de dados e histórico ([chat_history.py](file:///home/mbezerra/Works/whatsapp_bot/src/models/chat_history.py)).
+- `src/ingestion/`: Módulos de extração ([scraper.py](src/ingestion/scraper.py)) e vetorização ([vector_store.py](src/ingestion/vector_store.py)).
+- `src/ai/`: Orquestração do pipeline RAG ([rag_service.py](src/ai/rag_service.py)).
+- `src/models/`: Camada de dados e histórico ([chat_history.py](src/models/chat_history.py)).
 - `src/app.py`: Ponto de entrada da aplicação e rotas do Webhook.
 - `tests/`: Suíte completa de testes unitários, de fluxo e integração.
 
