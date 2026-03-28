@@ -26,8 +26,17 @@ class PHPScraper:
         # Exemplo simplificado: pegando links de seções principais
         for a in soup.find_all('a', href=True):
             href = a['href']
+            
             if href.endswith('.php') and not href.startswith('http'):
-                full_url = self.base_url.rsplit('/', 1)[0] + '/' + href
+                # Os links no manual do PHP geralmente são relativos à raiz do site (e.g., /downloads.php)
+                # ou relativos à página atual.
+                if href.startswith('/'):
+                    full_url = "https://www.php.net" + href
+                else:
+                    # Se não começar com /, é relativo ao diretório atual da base_url
+                    base = self.base_url.rsplit('/', 1)[0] + '/'
+                    full_url = base + href
+                
                 if full_url not in links:
                     links.append(full_url)
         return links
@@ -43,7 +52,8 @@ class PHPScraper:
         for script_or_style in soup(["script", "style"]):
             script_or_style.decompose()
 
-        content_div = soup.find('div', id='layout-content')
+        # O manual do PHP usa uma tag <section id="layout-content"> dentro de <div id="layout">
+        content_div = soup.find(id='layout-content')
         if not content_div:
             return {}
 

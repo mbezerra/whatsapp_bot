@@ -17,8 +17,8 @@ Example usage:
 """
 
 from typing import List, Dict
-from langchain_openai import OpenAIEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_chroma import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 
@@ -26,13 +26,17 @@ class VectorStoreManager:
     """
     Gerenciador do banco de dados vetorial (ChromaDB).
     Responsável pela fragmentação de documentos, geração de embeddings e persistência.
+    Utiliza modelos locais do HuggingFace para embeddings (gratuito).
     """
     def __init__(self, persist_directory: str):
         """
         Inicializa o gerenciador com o diretório de persistência e modelo de embeddings.
         """
         self.persist_directory = persist_directory
-        self.embeddings = OpenAIEmbeddings()
+        # Usando um modelo de embeddings local e gratuito
+        self.embeddings = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2"
+        )
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
             chunk_overlap=100
@@ -57,7 +61,6 @@ class VectorStoreManager:
             embedding=self.embeddings,
             persist_directory=self.persist_directory
         )
-        vector_db.persist()
         return vector_db
 
     def get_retriever(self):

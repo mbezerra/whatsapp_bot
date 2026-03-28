@@ -1,7 +1,7 @@
 """
 Serviço de IA que implementa o pipeline RAG (Retrieval-Augmented Generation) para o bot.
 """
-from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
@@ -12,8 +12,8 @@ from src.models.chat_history import ChatHistoryDB
 class RAGService:
     """
     Serviço que gerencia a lógica de Retrieval-Augmented Generation (RAG).
-    Responsável por buscar contexto relevante no banco vetorial e gerar respostas
-    utilizando o LLM da OpenAI, mantendo o histórico da conversa.
+    Responsável por buscar contexto relevante no banco vetorial e gerar respostas.
+    Utiliza o modelo gratuito Llama 3 da Groq para processamento de linguagem natural.
     """
     def __init__(self, vector_store_manager: VectorStoreManager, chat_history_db: ChatHistoryDB):
         """
@@ -21,7 +21,13 @@ class RAGService:
         """
         self.vector_store_manager = vector_store_manager
         self.chat_history_db = chat_history_db
-        self.llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
+
+        # Groq oferece um plano gratuito generoso para desenvolvedores
+        self.llm = ChatGroq(
+            model_name="llama-3.1-8b-instant",
+            temperature=0
+        )
+
         self.template = """Você é um assistente especialista na documentação do PHP.
 Use o contexto e o histórico de conversa para responder à pergunta do usuário.
 Se você não souber a resposta, diga que não encontrou na documentação oficial.

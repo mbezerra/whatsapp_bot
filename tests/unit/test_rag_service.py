@@ -4,7 +4,7 @@ Testes unitários para o serviço RAG (Retrieval-Augmented Generation).
 from unittest.mock import MagicMock, patch
 from src.ai.rag_service import RAGService
 
-@patch('src.ai.rag_service.ChatOpenAI')
+@patch('src.ai.rag_service.ChatGroq')
 def test_rag_service_initialization(_mock_chat):
     """
     Testa se o serviço RAG é inicializado com os parâmetros corretos.
@@ -15,7 +15,7 @@ def test_rag_service_initialization(_mock_chat):
     assert service.llm is not None
     assert "PHP" in service.template
 
-@patch('src.ai.rag_service.ChatOpenAI')
+@patch('src.ai.rag_service.ChatGroq')
 def test_get_response_calls_llm(mock_chat):
     """
     Valida se o serviço RAG invoca corretamente o LLM e processa a resposta.

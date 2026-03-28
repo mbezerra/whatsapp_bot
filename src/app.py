@@ -18,6 +18,24 @@ vector_store_manager = VectorStoreManager(os.getenv("CHROMA_DB_PATH"))
 chat_history_db = ChatHistoryDB()
 rag_service = RAGService(vector_store_manager, chat_history_db)
 
+@app.route("/", methods=['GET'])
+def index():
+    """
+    Página inicial informativa sobre o bot.
+    """
+    return {
+        "status": "online",
+        "service": "WhatsApp PHP Documentation Bot",
+        "endpoint": "/webhook (POST only)"
+    }, 200
+
+@app.route("/@vite/client", methods=['GET'])
+def vite_client_dummy():
+    """
+    Rota dummy para evitar logs de erro 404 de ferramentas de desenvolvimento (como Vite).
+    """
+    return "", 204
+
 @app.route("/webhook", methods=['POST'])
 def webhook():
     """
@@ -39,4 +57,4 @@ def webhook():
     return str(resp)
 
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    app.run(port=5001, debug=True)
