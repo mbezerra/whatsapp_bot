@@ -77,3 +77,29 @@ pytest tests/
 ## 📝 Notas de Implementação
 - O bot roda na porta **5001** para evitar conflitos comuns com serviços de sistema.
 - A rota `/@vite/client` está mapeada para evitar ruídos de logs em ambientes de desenvolvimento.
+
+## 🚀 Deploy em Produção
+
+Para ambientes de produção, siga as recomendações abaixo:
+
+### 1. Servidor WSGI
+Não utilize o servidor de desenvolvimento do Flask. Recomendamos o **Gunicorn**:
+```bash
+pip install gunicorn
+export PYTHONPATH=$PYTHONPATH:$(pwd)
+gunicorn --bind 0.0.0.0:5001 src.app:app
+```
+
+### 2. HTTPS e Webhooks
+O WhatsApp (via Twilio ou Meta) exige que o endpoint do Webhook seja **HTTPS**.
+- Utilize um certificado SSL válido (ex: Let's Encrypt).
+- Configure um Proxy Reverso como **Nginx** ou **Apache** à frente da aplicação.
+
+### 3. Persistência de Dados
+Certifique-se de que a pasta `data/` tenha permissões de escrita para o usuário que executa a aplicação. Em ambientes de containers (Docker), monte esta pasta como um volume persistente para não perder o histórico de chat e o banco vetorial.
+
+### 4. Variáveis de Ambiente
+Em produção, prefira configurar as variáveis de ambiente diretamente no sistema ou no gerenciador de segredos do seu provedor de nuvem (AWS Secrets Manager, GCP Secret Manager, etc), em vez de utilizar o arquivo `.env`.
+
+### 5. Ingestão de Dados
+O processo de ingestão (`run_ingestion.py`) deve ser executado pelo menos uma vez no ambiente de produção para construir o banco vetorial local inicial.
