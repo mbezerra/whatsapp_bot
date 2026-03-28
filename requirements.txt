@@ -1,0 +1,14 @@
+langchain
+langchain-openai
+langchain-community
+langchain-core
+langchain-text-splitters
+chromadb
+beautifulsoup4
+requests
+flask
+python-dotenv
+twilio
+pytest
+pytest-mock
+pydantic
