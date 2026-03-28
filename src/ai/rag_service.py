@@ -22,24 +22,34 @@ class RAGService:
         self.vector_store_manager = vector_store_manager
         self.chat_history_db = chat_history_db
 
-        # Groq oferece um plano gratuito generoso para desenvolvedores
+        # Groq oferece modelos potentes como o Llama 3.3 70B que segue melhor instruções complexas
         self.llm = ChatGroq(
-            model_name="llama-3.1-8b-instant",
+            model_name="llama-3.3-70b-versatile",
             temperature=0
         )
 
-        self.template = """You are an expert assistant specialized in PHP documentation.
-Use the provided context and chat history to answer the user's question.
-Provide technical, accurate, and direct answers.
-Avoid redundancies and do not overdo observations or notes.
-If there are important observations, present only those most relevant to the user's query.
-If you don't know the answer, state that you couldn't find it in the official documentation.
-Always respond in the same language used by the user in the question.
+        self.template = """You are an expert PHP Documentation Assistant.
+Your goal is to provide a SINGLE, concise, and technical answer based ONLY on the provided context.
 
-Context:
+### RESPONSE FORMAT:
+1. **Direct Answer**: Start with the technical explanation and code example.
+2. **One Observation (Optional)**: If and only if there is a CRITICAL technical detail, add ONE short "Observação".
+3. **STOP**: Do not generate any more text after the first observation.
+
+### CRITICAL CONSTRAINTS:
+- NEVER list multiple variations of the same rule.
+- NEVER generate more than one "Observação".
+- NEVER repeat information.
+- If you don't know, say: "Não encontrei essa informação na documentação oficial."
+- ALWAYS respond in the SAME language as the user (usually Portuguese).
+
+### CONTEXT:
 {context}
 
-Answer:"""
+### USER QUESTION:
+{question}
+
+### FINAL RESPONSE:"""
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", self.template),
             MessagesPlaceholder(variable_name="chat_history"),
