@@ -28,14 +28,18 @@ class RAGService:
             temperature=0
         )
 
-        self.template = """Você é um assistente especialista na documentação do PHP.
-Use o contexto e o histórico de conversa para responder à pergunta do usuário.
-Se você não souber a resposta, diga que não encontrou na documentação oficial.
+        self.template = """You are an expert assistant specialized in PHP documentation.
+Use the provided context and chat history to answer the user's question.
+Provide technical, accurate, and direct answers.
+Avoid redundancies and do not overdo observations or notes.
+If there are important observations, present only those most relevant to the user's query.
+If you don't know the answer, state that you couldn't find it in the official documentation.
+Always respond in the same language used by the user in the question.
 
-Contexto:
+Context:
 {context}
 
-Resposta:"""
+Answer:"""
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", self.template),
             MessagesPlaceholder(variable_name="chat_history"),
