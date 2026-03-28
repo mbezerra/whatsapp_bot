@@ -1,1 +1,21 @@
+# Entorno Virtual
+venv/
+.venv/
+env/
+
+# Cache de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Configurações Sensíveis
 .env
+
+# Dados Locais (Banco Vetorial e Histórico de Chat)
+data/
+
+# IDEs
+.vscode/
+.idea/
