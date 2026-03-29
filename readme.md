@@ -103,7 +103,7 @@ Para testar o bot com um dispositivo real, siga estes passos:
 
 Abaixo está o detalhamento do funcionamento interno do sistema, desde a chegada da mensagem até a resposta final.
 
-### Diagrama de Fluxo (Mermaid)
+### Diagrama de Fluxo
 
 ```mermaid
 graph TD
