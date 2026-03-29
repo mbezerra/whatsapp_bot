@@ -194,3 +194,7 @@ Em produção, prefira configurar as variáveis de ambiente diretamente no siste
 
 ### 5. Ingestão de Dados
 O processo de ingestão (`run_ingestion.py`) deve ser executado pelo menos uma vez no ambiente de produção para construir o banco vetorial local inicial.
+
+## 📝 TO-DO
+- Desenvolver o modelo multicanal ou agnóstico de provedor (Twilio/Meta).
+- Desenvolver o modelo de multi-ingestion, para adaptação a qualquer base de conhecimento fornecida.
