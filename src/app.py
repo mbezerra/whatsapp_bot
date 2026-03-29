@@ -42,14 +42,21 @@ def validate_twilio_request(f):
         validator = RequestValidator(Config.TWILIO_AUTH_TOKEN)
         signature = request.headers.get('X-Twilio-Signature', '')
 
-        # O Twilio envia a URL completa incluindo protocolo e host
-        url = request.url
+        # Reconstrói a URL pública se estiver atrás de um proxy (como ngrok)
+        # O Twilio assina a requisição usando a URL que ele chamou (a pública)
+        proto = request.headers.get('X-Forwarded-Proto', 'http')
+        host = request.headers.get('X-Forwarded-Host', request.host)
+        url = f"{proto}://{host}{request.path}"
+
+        # Se houver query parameters, eles devem ser incluídos na reconstrução
+        if request.query_string:
+            url += f"?{request.query_string.decode('utf-8')}"
 
         # Dados do formulário POST
         data = request.form.to_dict()
 
         if not validator.validate(url, data, signature):
-            print(f"Falha na validação de assinatura Twilio para URL: {url}")
+            logger.error("Falha na validação de assinatura Twilio para URL: %s", url)
             abort(403)
 
         return f(*args, **kwargs)

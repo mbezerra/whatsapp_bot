@@ -72,12 +72,19 @@ curl -X POST http://localhost:5001/webhook \
 Para testar o bot com um dispositivo real, siga estes passos:
 
 1. **Exponha seu servidor local:**
-   O Twilio precisa de uma URL HTTPS pública. Use o **ngrok** para criar um túnel:
-   ```bash
-   # Instale o ngrok (se não tiver): pip install pyngrok ou baixe em ngrok.com
-   ngrok http 5001
-   ```
-   Copie a URL gerada (ex: `https://abcd-123.ngrok-free.app`).
+   O Twilio precisa de uma URL HTTPS pública. Use o **ngrok** para criar um túnel. **Nota:** O ngrok agora exige um authtoken verificado para criar túneis públicos. Siga estes passos:
+   - Cadastre-se ou faça login em [ngrok.com](https://dashboard.ngrok.com/signup).
+   - Copie o seu token na aba "Your Authtoken".
+   - No seu terminal, rode:
+     ```bash
+     # Instale o ngrok (se não tiver): pip install pyngrok ou baixe em ngrok.com
+     ngrok config add-authtoken <seu_token_aqui>
+     ```
+   - Inicie o túnel:
+     ```bash
+     ngrok http 5001
+     ```
+   - Copie a URL gerada (ex: `https://abcd-123.ngrok-free.app`).
 
 2. **Configure o Sandbox da Twilio:**
    - Acesse o [Console Twilio](https://console.twilio.com/) > Messaging > Try it out > Send a WhatsApp message.
@@ -105,7 +112,6 @@ pytest tests/
 
 ## 📝 Notas de Implementação
 - O bot roda na porta **5001** para evitar conflitos comuns com serviços de sistema.
-- A rota `/@vite/client` está mapeada para evitar ruídos de logs em ambientes de desenvolvimento.
 
 ## 🚀 Deploy em Produção
 
