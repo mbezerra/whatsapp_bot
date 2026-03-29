@@ -99,6 +99,62 @@ Para testar o bot com um dispositivo real, siga estes passos:
 4. **Interaja:**
    Envie mensagens para o número do Sandbox no seu WhatsApp e receba as respostas da documentação PHP!
 
+## 🗺️ Mapa de Fluxo do Sistema
+
+Abaixo está o detalhamento do funcionamento interno do sistema, desde a chegada da mensagem até a resposta final.
+
+### Diagrama de Fluxo (Mermaid)
+
+```mermaid
+graph TD
+    User([Usuário WhatsApp]) --> Twilio[Twilio API]
+    Twilio --> Flask[Flask App /webhook]
+    
+    subgraph Validação
+        Flask --> Auth{Valida?}
+        Auth -->|Não| Reject[403 Forbidden]
+        Auth -->|Sim| SizeCheck{Tamanho?}
+        SizeCheck -->|Não| TooLong[Erro: Longa]
+    end
+    
+    subgraph RAG
+        SizeCheck -->|Sim| RAGSvc[RAG Service]
+        RAGSvc --> History[(SQLite: History)]
+        RAGSvc --> Chroma[(ChromaDB)]
+        Chroma --> HF[HuggingFace]
+        History --> Prompt[Prompt]
+        Prompt --> Groq[Groq: Llama 3.3]
+    end
+    
+    subgraph Resposta
+        Groq --> Save[Salva Histórico]
+        Save --> TwiML[XML TwiML]
+        TwiML --> TwilioResp[Twilio Response]
+    end
+    
+    TwilioResp --> User
+```
+
+### Detalhamento dos Processos
+
+1.  **Entrada e Segurança:**
+    - A mensagem chega via Twilio, que dispara um Webhook POST para o nosso servidor.
+    - O sistema valida a assinatura `X-Twilio-Signature` para garantir que a requisição é legítima.
+    - É feita uma checagem de tamanho (máx 1000 caracteres) para prevenir abusos.
+
+2.  **Recuperação de Contexto (RAG):**
+    - O **RAG Service** identifica o usuário pelo número de telefone (`From`).
+    - Recupera as últimas 10 interações do **SQLite** para manter o fio da conversa.
+    - Converte a pergunta em embeddings usando o modelo **HuggingFace** local e busca os trechos mais relevantes da documentação PHP no **ChromaDB**.
+
+3.  **Geração da Resposta:**
+    - Constrói um prompt em Inglês (para melhor aderência do modelo) contendo: Regras de Especialista, Histórico, Contexto da Documentação e a Pergunta.
+    - O modelo **Llama 3.3 70B** na Groq gera uma resposta técnica concisa em Português.
+
+4.  **Saída:**
+    - A nova interação é salva no banco de dados.
+    - A resposta é encapsulada em um XML TwiML e retornada ao Twilio, que a entrega ao usuário final no WhatsApp.
+
 ### Executar Suíte de Testes
 ```bash
 pytest tests/
