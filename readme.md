@@ -155,16 +155,16 @@ graph TD
     - A nova interação é salva no banco de dados.
     - A resposta é encapsulada em um XML TwiML e retornada ao Twilio, que a entrega ao usuário final no WhatsApp.
 
-### Executar Suíte de Testes
-```bash
-pytest tests/
-```
-
 ## 🧪 Estratégia de Qualidade
 - **Testes Unitários:** Validam a lógica isolada de extração local, processamento de texto e armazenamento.
 - **Testes de Fluxo:** Simulam o ciclo de vida completo de uma mensagem, desde a chegada no Webhook até a geração da resposta TwiML.
 - **Validação de Webhook:** O sistema inclui validação de assinatura do Twilio para garantir que as mensagens venham de fontes confiáveis.
 - **Gestão de Sessão:** O sistema identifica o usuário via `From` do WhatsApp e mantém o contexto da conversa utilizando SQLite.
+
+### Executar Suíte de Testes
+```bash
+pytest tests/
+```
 
 ## 📝 Notas de Implementação
 - O bot roda na porta **5001** para evitar conflitos comuns com serviços de sistema.
